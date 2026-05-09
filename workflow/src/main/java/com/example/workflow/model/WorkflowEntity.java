@@ -1,9 +1,21 @@
 package com.example.workflow.model;
-import java.util.UUID;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
+@Entity
+@Getter
+@Setter
 public class WorkflowEntity extends BaseEntity {
+
     public String WorkflowName;
-    public UUID owner_id;
+        @ManyToOne(fetch=FetchType.LAZY,optional=false)
+    @JoinColumn(name="user_id",nullable=false)
+    public UserEntity user;
     public String description;
-     private WorkflowStatus status;
+     private WorkflowStatus status=WorkflowStatus.ACTIVE;
      
 }

@@ -6,5 +6,6 @@ public enum WorkflowRunStatus {
     WAITING,
     SUCCESS,
     FAILED,
-    CANCELED
+    CANCELED,
+    RETRY_PENDING
 }

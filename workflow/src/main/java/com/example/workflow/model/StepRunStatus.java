@@ -7,5 +7,6 @@ public enum StepRunStatus {
     FAILED,
     SKIPPED,
     TIMEOUT,
-    CANCELED
+    CANCELED,
+    RETRY_PENDING
 }

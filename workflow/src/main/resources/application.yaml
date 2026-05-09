@@ -1,3 +1,13 @@
 spring:
   application:
     name: workflow
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always # This creates the QRTZ_ tables automatically
+    properties:
+      org:
+        quartz:
+          jobStore:
+            # Use PostgreSQLDelegate if using Postgres, or StdJDBCDelegate for MySQL
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
