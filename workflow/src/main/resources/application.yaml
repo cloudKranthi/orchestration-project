@@ -1,13 +1,36 @@
 spring:
   application:
     name: workflow
+  datasource:
+    url: jdbc:postgresql://localhost:5432/workflow_db
+    username: postgres
+    password: Shiva@37
+    driver-class-name: org.postgresql.Driver 
+    
+  
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true 
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        
+  
   quartz:
     job-store-type: jdbc
     jdbc:
-      initialize-schema: always # This creates the QRTZ_ tables automatically
+      initialize-schema: always 
     properties:
       org:
         quartz:
           jobStore:
-            # Use PostgreSQLDelegate if using Postgres, or StdJDBCDelegate for MySQL
             driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:4f6b92a3c8e5d1f0b7a4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2}
+    access-token-expiry: 86400000 
+    refresh-token-expiry: 604800000
+  security:
+    secret: ${SECURITY_SECRET:9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9}

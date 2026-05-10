@@ -1,7 +1,8 @@
 package com.example.workflow.model;
 
 public enum StepType {
-    EMAIL,
+    EMAIL_SEND,
      DELAY,
-    HTTP_CALL
+    HTTP_CALL,
+    EMAIL_CHECK
 }

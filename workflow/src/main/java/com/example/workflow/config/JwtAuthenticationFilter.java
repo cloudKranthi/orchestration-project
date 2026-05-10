@@ -26,7 +26,7 @@ import lombok.NonNull;
 @Component
 public class JwtAuthenticationFilter  extends OncePerRequestFilter{
 
-    private final JwtService jwtService;
+   private final JwtService jwtService;
     private final UserRepository userRepository;
     
     @Override
@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter{
             try{
             String userId=jwtService.extractClaims(jwt,Claims::getSubject);
             
-            UserEntity user=userRepository.findById(UUID.fromString(userId));
+            UserEntity user=userRepository.findById(UUID.fromString(userId)).orElseThrow(()->new RuntimeException("No such user found"));
             if(user!=null&&jwtService.checkToken(jwt)){
 
             String role=user.getRole();

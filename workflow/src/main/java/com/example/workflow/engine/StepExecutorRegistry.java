@@ -10,15 +10,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class StepExecutorRegistry {
     private final DelayStepExecutor delayStepExecutor;
-    private final EmailStepExecutor emailStepExecutor;
+    private final EmailSendStepExecutor emailSendStepExecutor;
+    private final EmailCheckExecutor emailCheckExecutor;
     private final HttpStepExecutor httpStepExecutor;
     private  final Map<StepType,StepExecutor> map= new EnumMap<>(StepType.class);
 
     @PostConstruct
     public void init(){
-    map.put(StepType.EMAIL,emailStepExecutor);
+    map.put(StepType.EMAIL_SEND,emailSendStepExecutor);
     map.put(StepType.DELAY,delayStepExecutor);
     map.put(StepType.HTTP_CALL,httpStepExecutor);
+    map.put(StepType.EMAIL_CHECK,emailCheckExecutor);
     }
     public StepExecutor getExecutor(StepType type){
         return map.get(type);
