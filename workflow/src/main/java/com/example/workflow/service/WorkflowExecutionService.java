@@ -88,10 +88,19 @@ public class WorkflowExecutionService {
         try{
             var executor=stepExecutorRegistry.getExecutor(workflowStep.getStepType());
             executor.executeStepRun(stepRun);
-            workflowRun.setCurrentStepOrder(workflowRun.getCurrentStepOrder()+1);
-            stepRun.setStatus(StepRunStatus.SUCCESS);
-            workflowRunRepository.save(workflowRun);
-            stepRunRepository.save(stepRun);
+            if (stepRun.getStatus() == StepRunStatus.RETRY_PENDING) {
+        // The Email wasn't found yet. Hibernate the workflow.
+        workflowRun.setStatus(WorkflowRunStatus.RETRY_PENDING);
+        stepRun.setNextExecutionAt(LocalDateTime.now().plusMinutes(5));
+        stepRun.setAttemptCount(stepRun.getAttemptCount() + 1);
+        
+        stepRunRepository.save(stepRun);
+        workflowRunRepository.save(workflowRun);
+        con = false; 
+        break; 
+    }
+
+      
             
             
         }catch(Exception e){

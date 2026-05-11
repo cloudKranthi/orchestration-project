@@ -27,6 +27,7 @@ public class WorkflowJob  implements Job{
           
            stepRunRepository.findByWorkflowRunAndStepOrder(workflowRun,workflowRun.getCurrentStepOrder()).ifPresent(stepRun->{;
             stepRun.setStatus(StepRunStatus.SUCCESS);
+            stepRun.setStepOrder(stepRun.getStepOrder()+1);
                     stepRunRepository.save(stepRun);
 
                 
