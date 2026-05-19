@@ -18,12 +18,12 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class JwtService {
     private final UserRepository userRepositry;
-    @Value("${jwt_secret}")
+    @Value("${app.jwt.secret}")
     private String jwtSecret;
     
-    @Value("${at_expiry}")
+    @Value("${app.jwt.access-token-expiry}")
     private long atExpiry;
-    @Value("${rt_expiry}")
+    @Value("${app.jwt.refresh-token-expiry}")
     private long rtExpiry;
 
    public Map<String,String> CreateToken(UUID userId){

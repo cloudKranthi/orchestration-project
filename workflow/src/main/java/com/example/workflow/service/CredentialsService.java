@@ -20,11 +20,15 @@ public class CredentialsService {
     private final CryptoUtils cryptoUtils;
     public void saveCredentials(String provider,String password){
         String email=SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("The email fetched from Security context is {}",email);
+        String cleanEmail = (email != null) ? email.trim().replace("\r", "") : "";
+    String cleanProvider = (provider != null) ? provider.trim().toUpperCase().replace("\r", "") : "";
         try{
         String encryptString=cryptoUtils.encrypt(password);
-        UserEntity user=userRepository.findByEmail(email).OrElseThrow(()->new RuntimeException("No such User found"));
+        log.info("The email is {} and provider is {} ",cleanEmail,cleanProvider);
+        UserEntity user=userRepository.findByEmail(cleanEmail).orElseThrow(()->new RuntimeException("No such User found"));
         UserCredentialsEntity userCredentialsEntity=new UserCredentialsEntity();
-        userCredentialsEntity.setProvider(provider);
+        userCredentialsEntity.setProvider(cleanProvider);
         userCredentialsEntity.setUser(user);
         userCredentialsEntity.setEncryptedString(encryptString);
         userCredentialsRepository.save(userCredentialsEntity);

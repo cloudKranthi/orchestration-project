@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class WorkflowEntity extends BaseEntity {
 
-    public String WorkflowName;
+    public String workflowName;
         @ManyToOne(fetch=FetchType.LAZY,optional=false)
     @JoinColumn(name="user_id",nullable=false)
     public UserEntity user;

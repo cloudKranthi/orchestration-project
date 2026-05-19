@@ -14,6 +14,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 public  abstract class BaseEntity{
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(updatable=false,nullable=false)
+    @Id
    public UUID id;
    @CreationTimestamp
    @Column(updatable=false,nullable=false)

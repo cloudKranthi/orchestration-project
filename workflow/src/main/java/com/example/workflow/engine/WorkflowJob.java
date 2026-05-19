@@ -1,18 +1,16 @@
 package com.example.workflow.engine;
-import com.example.workflow.Repository.WorkflowRunRepository;
-import com.example.workflow.service.WorkflowExecutionService;
-import lombok.RequiredArgsConstructor;
-import com.example.workflow.model.StepRun;
-import com.example.workflow.model.StepRunStatus;
-import com.example.workflow.model.WorkflowRun;
+import java.util.UUID;
+
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.workflow.Repository.StepRunRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.quartz.Job;
-import java.util.UUID;
-import org.springframework.transaction.annotation.Transactional;
-import org.quartz.JobExecutionContext;
-import org.springframework.stereotype.Component;
+import com.example.workflow.Repository.WorkflowRunRepository;
+import com.example.workflow.model.StepRunStatus;
+import com.example.workflow.service.WorkflowExecutionService;
+
+import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class WorkflowJob  implements Job{
     private final WorkflowExecutionService executionService;
@@ -25,16 +23,10 @@ public class WorkflowJob  implements Job{
         UUID workflowid=UUID.fromString(key);
         workflowRunRepository.findById(workflowid).ifPresent(workflowRun->{
           
-           stepRunRepository.findByWorkflowRunAndStepOrder(workflowRun,workflowRun.getCurrentStepOrder()).ifPresent(stepRun->{;
+           stepRunRepository.findByWorkflowRunAndCurrentworkflowStep(workflowRun,workflowRun.getCurrentstep()).ifPresent(stepRun->{;
             stepRun.setStatus(StepRunStatus.SUCCESS);
-            stepRun.setStepOrder(stepRun.getStepOrder()+1);
                     stepRunRepository.save(stepRun);
-
-                
-                    workflowRun.setCurrentStepOrder(workflowRun.getCurrentStepOrder() + 1);
                     workflowRunRepository.save(workflowRun);
-
-                    
                     executionService.executeSteps(workflowRun);
             });
         });

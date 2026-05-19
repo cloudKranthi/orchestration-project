@@ -4,5 +4,6 @@ public enum StepType {
     EMAIL_SEND,
      DELAY,
     HTTP_CALL,
-    EMAIL_CHECK
+    EMAIL_CHECK,
+    AI
 }

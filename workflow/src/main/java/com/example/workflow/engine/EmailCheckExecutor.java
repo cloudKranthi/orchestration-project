@@ -27,17 +27,18 @@ import com.example.workflow.utils.CryptoUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import tools.jackson.databind.deser.std.FromStringWithRadixToNumberDeserializer;
 
+import com.example.workflow.model.WorkflowStep;
+import com.example.workflow.Repository.WorkflowStepRepository;
 import com.example.workflow.model.UserEntity;
 import com.example.workflow.model.UserCredentialsEntity;
+import com.fasterxml.jackson.databind.JsonNode;
 
-
-
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Component;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 
-import tools.jackson.databind.node.ObjectNode;
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -46,23 +47,33 @@ public class EmailCheckExecutor  implements StepExecutor{
     private final CredentialsService credentialsService;
     private final UserCredentialsRepository userCredentialsRepository;
     private final ObjectMapper objectMapper;
+    private final WorkflowStepRepository workflowStepRepository;
     private final StepRunRepository stepRunRepository;
     @Override
+    @Transactional
     public void executeStepRun(StepRun stepRun){
         try{
-    JsonNode config=objectMapper.readTree(stepRun.getWorkflowStep().getConfigJson());
+    WorkflowStep workflowStep=stepRun.getCurrentworkflowStep();
+    JsonNode config=objectMapper.readTree(stepRun.getCurrentworkflowStep().getConfigJson());
     String Subject=config.path("SUBJECT").asText();
     String fromemail=config.path("FROM_EMAIL").asText();
     String provider=config.path("PROVIDER").asText();
      UserEntity user=stepRun.getWorkflowRun().getWorkflow().getUser();
-    UserCredentialsEntity userCredentialsEntity=userCredentialsRepository.findByUserEntityAndProvider(user, provider).orElseThrow(()->new RuntimeException(e.getMessage()));
+    UserCredentialsEntity userCredentialsEntity=userCredentialsRepository.findByUserAndProvider(user, provider).orElseThrow(()->new RuntimeException("No such User credential present"));
     String decryptedString=cryptoUtils.decrypt(userCredentialsEntity.getEncryptedString());
     Properties props=new Properties();
     props.put("mail.store.protocol","imaps");
     Session session=Session.getInstance(props);
 
     Store store= session.getStore("imaps");
+    if(provider.equals("GOOGLE"))
     store.connect("imaps.gmail.com",user.getEmail(),decryptedString);
+    else if(provider.equals("OUTLOOK")){
+        store.connect("imaps.outlook.com",user.getEmail(),decryptedString);
+    }
+    else{
+         store.connect("imaps.provider.com",user.getEmail(),decryptedString);
+    }
     Folder folder=store.getFolder("INBOX");
     folder.open(folder.READ_ONLY);
     SearchTerm fromTerm= new FromStringTerm(fromemail);
@@ -71,15 +82,19 @@ public class EmailCheckExecutor  implements StepExecutor{
     Message [] messages=folder.search(combinedTerm);
     if(messages.length>0){
          Message message=messages[messages.length-1];
-       ObjectNode output=new objectMapper.createObjectNode();
+       ObjectNode output=objectMapper.createObjectNode();
        output.put("subject",message.getSubject());
        output.put("found",true);
        stepRun.setOutputJson(output.toString());
-       stepRunRepository.save(stepRun);
+
+       stepRun.setBooleanResult(true);
        stepRun.setStatus(StepRunStatus.SUCCESS);
+        stepRunRepository.save(stepRun);
+        
     }
     else{
-        throw new RuntimeException("No email found");
+         stepRun.setBooleanResult(false);
+          
     }
     folder.close(false);
     store.close();

@@ -34,13 +34,15 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter{
     protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain filterChain)throws ServletException,IOException{
         String jwt="";
         Cookie cookies[]=request.getCookies();
+        if(cookies!=null){
         for(Cookie cookie:cookies){
          if(("accessToken").equals(cookie.getName())){jwt=cookie.getValue();
             break;
         }
         }   
-        if(jwt!=null&&SecurityContextHolder.getContext()==null){
-            if(jwtService.equals(jwt))
+    }
+        if(jwt!=null&&!jwt.isEmpty()&&SecurityContextHolder.getContext().getAuthentication()==null){
+            
             try{
             String userId=jwtService.extractClaims(jwt,Claims::getSubject);
             
@@ -49,7 +51,7 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter{
 
             String role=user.getRole();
             var Authorities=List.of(new SimpleGrantedAuthority("ROLE_"+role));
-                UsernamePasswordAuthenticationToken authToken=new UsernamePasswordAuthenticationToken(user, null,Authorities);
+                UsernamePasswordAuthenticationToken authToken=new UsernamePasswordAuthenticationToken(user.getEmail(), null,Authorities);
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }

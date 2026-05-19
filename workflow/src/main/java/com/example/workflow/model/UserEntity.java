@@ -17,7 +17,9 @@ public class UserEntity extends BaseEntity{
     @Column(nullable=false)
     private String password;
     private String refreshToken;
-    @ElementCollection(fetch=FetchType.EAGER)
+    
+    @Column(name = "role", nullable = false)
+    
     private String role;
     
 } 

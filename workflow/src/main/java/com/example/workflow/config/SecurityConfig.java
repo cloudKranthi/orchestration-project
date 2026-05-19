@@ -22,8 +22,9 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth->auth.
      requestMatchers("/api/user/login","/api/user/register").permitAll()
         .requestMatchers("/api/user").hasAnyRole("USER","ADMIN")
-        .requestMatchers("/api/admin").hasRole("ADMIN").anyRequest()
-        .authenticated()).addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class);
+        .requestMatchers("/api/admin").hasRole("ADMIN")
+        .anyRequest().authenticated())
+        .addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

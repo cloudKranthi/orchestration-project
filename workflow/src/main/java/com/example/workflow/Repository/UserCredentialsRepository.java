@@ -6,5 +6,5 @@ import com.example.workflow.model.UserEntity;
 import com.example.workflow.model.UserCredentialsEntity;
 public interface UserCredentialsRepository  extends JpaRepository<UserCredentialsEntity, UUID>{
 
-    Optional<UserCredentialsEntity> findByUserEntityAndProvider(UserEntity userEntity,String provider);
+    Optional<UserCredentialsEntity> findByUserAndProvider(UserEntity user,String provider);
 }
